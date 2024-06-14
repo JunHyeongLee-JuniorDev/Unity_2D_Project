@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int round = 1;
+    public int Round => round;
+
     void Update()
     {
         
