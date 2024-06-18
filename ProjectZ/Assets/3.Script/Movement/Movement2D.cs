@@ -16,7 +16,7 @@ public class Movement2D : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.position += moveDirection * Move_Speed * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + moveDirection * Move_Speed * Time.fixedDeltaTime);
     }
 
     public void MoveTo(Vector3 direction)

@@ -15,10 +15,9 @@ public class PlayerMoveControl : MonoBehaviour
     // 대쉬
     //***********************************************
     private float NormalSpeed = 2f;
-    private float DashSpeed = 20f;
-    private float DashCount = 0.05f;
-    private readonly float DashTime = 0.05f;
-    private bool isDashing = false;
+    public readonly float DashSpeed = 10f;
+    public float DashCount = 0.1f;
+    private readonly float DashTime = 0.1f;
     //***********************************************
     /*
      플레이어 이동 먼저 구현하자
@@ -50,10 +49,8 @@ public class PlayerMoveControl : MonoBehaviour
 
         PlayerMove();
 
-        if (isDashing)
-        {
+        if(movement2D.Move_Speed.Equals(DashSpeed))
             StartCoroutine(ghostControl.TryDash_co());
-        }
     }
 
     public void PlayerMove()
@@ -99,10 +96,9 @@ public class PlayerMoveControl : MonoBehaviour
 
     public void TryDash() // 대쉬 기능
     {
+
         if (Input.GetKeyUp(KeyCode.Space) && DashCount <= 0)
         {
-            isDashing = true;
-            StartCoroutine(ghostControl.TryDash_co());
             movement2D.Move_Speed = DashSpeed;
             DashCount = DashTime;
         }
@@ -113,7 +109,6 @@ public class PlayerMoveControl : MonoBehaviour
             DashCount -= Time.deltaTime;
             if (DashCount <= 0)
             {
-                isDashing = false;
                 movement2D.Move_Speed = NormalSpeed;
             }
         }

@@ -6,6 +6,7 @@ public class PlayerGhostControl : MonoBehaviour
 {
     public GameObject ghost;
     private PlayerMoveControl Player;
+    private Movement2D movement2D;
     public bool makeGhost = false;
 
     private readonly int poolCount = 15;
@@ -17,6 +18,7 @@ public class PlayerGhostControl : MonoBehaviour
         GameObject currentGhost;
         Player = GetComponent<PlayerMoveControl>();
         ghost_queue = new Queue<GameObject>();
+        movement2D = GetComponent<Movement2D>();
 
         for (int i=0;i < poolCount; i++)
         {
@@ -29,23 +31,28 @@ public class PlayerGhostControl : MonoBehaviour
 
     public IEnumerator TryDash_co()
     {
-            GameObject currentGhost;
+        GameObject currentGhost;
+        WaitForSeconds wfs = new WaitForSeconds(0.1f);
+
             currentGhost = ghost_queue.Dequeue();
 
             currentGhost.transform.position = transform.position;
             currentGhost.SetActive(true);
             currentGhost.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
             SpriteRenderer ghostSprite = currentGhost.GetComponent<SpriteRenderer>();
+
             if (Player.X.Equals(-1))
-            ghostSprite.flipX = true;
+                ghostSprite.flipX = true;
 
             else
-            ghostSprite.flipX = false;
+                ghostSprite.flipX = false;
 
-        yield return new WaitForSeconds(0.1f);
+            yield return wfs;
+
             ghost_queue.Enqueue(currentGhost);
             currentGhost.SetActive(false);
             currentGhost.transform.position = poolPosition;
+        
         
     }
 }

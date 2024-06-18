@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if(instance = null)
+        if(instance == null)
         {
             instance = this;
         }
@@ -27,10 +27,12 @@ public class GameManager : MonoBehaviour
     }
 
     private int round = 1;
+    public bool _isRoundClear = true; // µð¹ö±ë
+    public bool isRoundClear => _isRoundClear;
     public int Round => round;
 
     void Update()
     {
-        
+            
     }
 }
