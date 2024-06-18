@@ -7,21 +7,21 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private GameObject Enemy;
     private List<GameObject> enemyList;
 
-    private readonly int goblinCount = 50;
-    private readonly int[] goblinRound = { 5, 10, 10, 15, 20, 30 };
+    private readonly int goblinCount = 20;
+    private readonly int[] goblinRound = { 0, 5, 10, 15, 20, 20 };
 
-    private readonly int eyeCount = 25;
-    private readonly int[] eyeRound = { 5, 10, 10, 15, 15, 20 };
+    private readonly int eyeCount = 20;
+    private readonly int[] eyeRound = { 0, 5, 10, 15, 15, 20 };
 
-    private readonly int skeletonCount = 30;
-    private readonly int[] skeletionRound = { 0, 0, 10, 15, 30, 30 };
+    private readonly int skeletonCount = 20;
+    private readonly int[] skeletionRound = { 0, 5, 10, 15, 20, 20 };
     
     private readonly int mushroomCount = 20;
-    private readonly int[] mushroomRound = { 0, 0, 0, 15, 20, 20 };
+    private readonly int[] mushroomRound = { 0, 5, 5, 15, 20, 20 };
 
     private int poolCount;
     private int[] poolRound;
-    private Vector3 poolPos = new Vector3(0, 200);
+    private Vector3 poolPos = new Vector3(-80f, -0.82f, 0);
 
     private void Awake()
     {
@@ -69,13 +69,13 @@ public class EnemySpawner : MonoBehaviour
 
     public IEnumerator StartRound_co()
     {
-        WaitForSeconds wfs = new WaitForSeconds(1f);
+        WaitForSeconds SpawnTime = new WaitForSeconds(2f);
 
         for(int i=0;i < poolRound[GameManager.instance.Round]; i++)
         {
+            enemyList[i].transform.position = gameObject.transform.position;
             enemyList[i].SetActive(true);
-            enemyList[i].transform.position = transform.position;
-            yield return wfs;
+            yield return SpawnTime;
         }
     }
     public void EndRound()

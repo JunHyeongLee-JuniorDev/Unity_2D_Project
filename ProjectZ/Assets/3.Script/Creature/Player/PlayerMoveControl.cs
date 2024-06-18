@@ -8,13 +8,13 @@ public class PlayerMoveControl : MonoBehaviour
     private SpriteRenderer _renderer;
     private PlayerGhostControl ghostControl;
     private Animator ob_Ani;
-    private MoveAni MoveAni;
+    private PlayerMoveAni MoveAni;
     private float x;
     private float y;
     public float X => x;
     // ´ë½¬
     //***********************************************
-    private float NormalSpeed = 2f;
+    private float NormalSpeed = 3f;
     public readonly float DashSpeed = 10f;
     public float DashCount = 0.1f;
     private readonly float DashTime = 0.1f;
@@ -31,7 +31,7 @@ public class PlayerMoveControl : MonoBehaviour
         _renderer = transform.GetComponent<SpriteRenderer>();
         ob_Ani = transform.GetComponent<Animator>();
         movement2D = transform.GetComponent<Movement2D>();
-        MoveAni = transform.GetComponent<MoveAni>();
+        MoveAni = transform.GetComponent<PlayerMoveAni>();
     }
 
     void Start()
@@ -49,8 +49,8 @@ public class PlayerMoveControl : MonoBehaviour
 
         PlayerMove();
 
-        if(movement2D.Move_Speed.Equals(DashSpeed))
-            StartCoroutine(ghostControl.TryDash_co());
+        if (movement2D.Move_Speed.Equals(DashSpeed))
+            ghostControl.TryDash();
     }
 
     public void PlayerMove()

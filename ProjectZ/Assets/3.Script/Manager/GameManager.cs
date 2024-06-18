@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
      */
 
     public static GameManager instance = null;
+    [SerializeField]private GameObject player;
+    public GameObject Player => player;
 
     private void Awake()
     {
