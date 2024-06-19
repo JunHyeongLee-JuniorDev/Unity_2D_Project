@@ -18,6 +18,7 @@ public class EnemySpawner : MonoBehaviour
     
     private readonly int mushroomCount = 20;
     private readonly int[] mushroomRound = { 0, 5, 5, 15, 20, 20 };
+    private EnemyName enemyName;
 
     private int poolCount;
     private int[] poolRound;
@@ -25,25 +26,31 @@ public class EnemySpawner : MonoBehaviour
 
     private void Awake()
     {
+        EnemyControl enemyScript;
+
         enemyList = new List<GameObject>();
         switch(Enemy.name)
         {
             case "Goblin":
+                enemyName = EnemyName.GOBLIN;
                 poolCount = goblinCount;
                 poolRound = goblinRound;
                 break;
 
             case "Flying_eye":
+                enemyName = EnemyName.FLYING_EYE;
                 poolCount = eyeCount;
                 poolRound = eyeRound;
                 break;
 
             case "Skeleton":
+                enemyName = EnemyName.SKELETON;
                 poolCount = skeletonCount;
                 poolRound = skeletionRound;
                 break;
 
             case "Mushroom":
+                enemyName = EnemyName.MUSHROOM;
                 poolCount = mushroomCount;
                 poolRound = mushroomRound;
                 break;
@@ -53,17 +60,12 @@ public class EnemySpawner : MonoBehaviour
         for(int i=0;i < poolCount;i++)
         {
             oneEnemy = Instantiate(Enemy, poolPos, Quaternion.identity);
+            enemyScript = oneEnemy.GetComponent<EnemyControl>();
+            enemyScript._hp = enemyScript.MaxHealtharr[(int)enemyName];
+            enemyScript._Damage = enemyScript.Damagearr[(int)enemyName];
+            enemyScript._Speed = enemyScript.Speedarr[(int)enemyName];
             oneEnemy.SetActive(false);
             enemyList.Add(oneEnemy);
-        }
-    }
-
-    void Update()
-    {
-        if (GameManager.instance._isRoundClear)
-        {
-            StartCoroutine("StartRound_co");
-            GameManager.instance._isRoundClear = false;
         }
     }
 
@@ -80,6 +82,29 @@ public class EnemySpawner : MonoBehaviour
     }
     public void EndRound()
     {
+        for (int i = 0; i < poolRound[GameManager.instance.Round]; i++)
+        {
+            enemyList[i].transform.position = poolPos;
+            enemyList[i].SetActive(false);
+        }
+    }
 
+    public bool IsCleared()
+    {
+        int aliveCounter= 0;
+        EnemyControl CurEnemy;
+
+        for (int i = 0; i < poolRound[GameManager.instance.Round]; i++)
+        {
+            CurEnemy = enemyList[i].GetComponent<EnemyControl>();
+            if (CurEnemy.isDead)
+                aliveCounter++;
+        }
+
+        if (aliveCounter.Equals(poolRound[GameManager.instance.Round]))
+            return true;
+
+        else
+            return false;
     }
 }

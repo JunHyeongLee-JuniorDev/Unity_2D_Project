@@ -5,13 +5,13 @@ using UnityEngine;
 public class PlayerGhostControl : MonoBehaviour
 {
     public GameObject ghost;
-    private PlayerMoveControl Player;
+    private PlayerControl Player;
 
     private readonly Vector3 poolPosition = new Vector3(0, 200, 0);
 
     private void Awake()
     {
-        Player = GetComponent<PlayerMoveControl>();
+        Player = GetComponent<PlayerControl>();
     }
 
     public void TryDash()
