@@ -11,22 +11,40 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance = null;
     [SerializeField]private GameObject player;
+    private PlayerControl playerControl;
+    private PlayerBar playerBar;
 
-
+    private bool isGameStart = true;
     private int round = 1;
+    public int[] maxEnemyAmount; // 라운드별 총 몬스터 개수
     private EnemySpawner[] Spawner;
 
-    private int PlayerKills = 0;
-
-    public bool _isRoundClear = true;
+    public int PlayerKills = 0;
     public GameObject Player => player;
-    public int Round => round;
+    private bool isPlayerDead = false;
+    public int Round
+    {
+        get
+        {
+            return round;
+        }
+
+        set
+        {
+            round = value;
+        }
+    }
 
     private void Awake()
     {
         if(instance == null)
         {
             instance = this;
+        Spawner = new EnemySpawner[System.Enum.GetValues(typeof(EnemyName)).Length];
+        Spawner[(int)EnemyName.GOBLIN] = GameObject.Find("GoblinSpwaner").GetComponent<EnemySpawner>();
+        Spawner[(int)EnemyName.FLYING_EYE] = GameObject.Find("eyeSpawner").GetComponent<EnemySpawner>();
+        Spawner[(int)EnemyName.MUSHROOM] = GameObject.Find("MushroomSpawner").GetComponent<EnemySpawner>();
+        Spawner[(int)EnemyName.SKELETON] = GameObject.Find("SkelSpawner").GetComponent<EnemySpawner>();
         }
 
         else
@@ -34,51 +52,102 @@ public class GameManager : MonoBehaviour
             Debug.Log("The instance already exists!");
             Destroy(gameObject);
         }
-        Spawner = new EnemySpawner[System.Enum.GetValues(typeof(EnemyName)).Length];
     }
     
     private void Start()
     {
-        Spawner[(int)EnemyName.GOBLIN] = GameObject.Find("GoblinSpwaner").GetComponent<EnemySpawner>();
-        Spawner[(int)EnemyName.FLYING_EYE] = GameObject.Find("eyeSpawner").GetComponent<EnemySpawner>();
-        Spawner[(int)EnemyName.MUSHROOM] = GameObject.Find("MushroomSpawner").GetComponent<EnemySpawner>();
-        Spawner[(int)EnemyName.SKELETON] = GameObject.Find("SkelSpawner").GetComponent<EnemySpawner>();
+        maxEnemyAmount = new int[6];
+
+        playerControl = player.transform.GetComponent<PlayerControl>();
+        playerBar = player.transform.GetComponent<PlayerBar>();
+
+            for (int i=1;i < maxEnemyAmount.Length; i++)
+        {
+            maxEnemyAmount[i] = 0;
+            maxEnemyAmount[i] += Spawner[(int)EnemyName.GOBLIN].poolByRound[i];
+            maxEnemyAmount[i] += Spawner[(int)EnemyName.FLYING_EYE].poolByRound[i];
+            maxEnemyAmount[i] += Spawner[(int)EnemyName.SKELETON].poolByRound[i];
+            maxEnemyAmount[i] += Spawner[(int)EnemyName.MUSHROOM].poolByRound[i];
+        }
     }
 
     void Update()
     {
-        StartRound();
-        RoundCleared();
+        if(isGameStart)
+        {
+            StartRound();
+        }
     }
     
     private void StartRound()
     {
-        if(_isRoundClear)
+        StartCoroutine("StartRound_co");
+        isGameStart = false;
+    }
+
+    private IEnumerator StartRound_co()
+    {
+        WaitForSeconds SpawnTime = new WaitForSeconds(2f);
+        int MaxSpawnPool;
+
+        MaxSpawnPool = Spawner[0].poolByRound[round];
+        for (int i=0;i<Spawner.Length;i++)
         {
-            StartCoroutine(Spawner[(int)EnemyName.GOBLIN].StartRound_co());
-            StartCoroutine(Spawner[(int)EnemyName.FLYING_EYE].StartRound_co());
-            StartCoroutine(Spawner[(int)EnemyName.MUSHROOM].StartRound_co());
-            StartCoroutine(Spawner[(int)EnemyName.SKELETON].StartRound_co());
-            _isRoundClear = false;
+            if(MaxSpawnPool < Spawner[i].poolByRound[round])
+            {
+                MaxSpawnPool = Spawner[i].poolByRound[round];
+            }
+        }
+
+        for(int i=0; i < MaxSpawnPool; i++)
+        {
+            if(i < Spawner[(int)EnemyName.GOBLIN].poolByRound[round])
+                Spawner[(int)EnemyName.GOBLIN].Spawning(i);
+
+            if (i < Spawner[(int)EnemyName.FLYING_EYE].poolByRound[round])
+                Spawner[(int)EnemyName.FLYING_EYE].Spawning(i);
+
+            if (i < Spawner[(int)EnemyName.MUSHROOM].poolByRound[round])
+                Spawner[(int)EnemyName.MUSHROOM].Spawning(i);
+
+            if (i < Spawner[(int)EnemyName.SKELETON].poolByRound[round])
+                Spawner[(int)EnemyName.SKELETON].Spawning(i);
+
+            yield return SpawnTime;
         }
     }
 
-    private void RoundCleared()
+    public IEnumerator RoundCleared_co()
     {
-        if (Spawner[(int)EnemyName.GOBLIN].IsCleared() &&
-           Spawner[(int)EnemyName.FLYING_EYE].IsCleared() &&
-           Spawner[(int)EnemyName.MUSHROOM].IsCleared() &&
-           Spawner[(int)EnemyName.SKELETON].IsCleared()
-            )
-        {
-            Spawner[(int)EnemyName.GOBLIN].EndRound();
-            Spawner[(int)EnemyName.FLYING_EYE].EndRound();
-            Spawner[(int)EnemyName.MUSHROOM].EndRound();
-            Spawner[(int)EnemyName.SKELETON].EndRound();
-            _isRoundClear = true;
-        }
+        playerControl.CurHP = playerControl.MaxHP;
+        playerBar.CheckHPgage();
 
-        else
-            _isRoundClear = false;
+        Spawner[(int)EnemyName.GOBLIN].EndRound();
+        Spawner[(int)EnemyName.FLYING_EYE].EndRound();
+        Spawner[(int)EnemyName.MUSHROOM].EndRound();
+        Spawner[(int)EnemyName.SKELETON].EndRound();
+
+        yield return new WaitForSeconds(10f);
+
+        round += 1;
+        StartRound();
+    }
+
+    public void AddScore()
+    {
+        PlayerKills += 1;
+        if (PlayerKills >= maxEnemyAmount[Round])
+        {
+            PlayerKills = 0;
+            StartCoroutine(RoundCleared_co());
+        }
+    }
+
+    public void GameOver()
+    {
+        if(isPlayerDead)
+        {
+
+        }
     }
 }

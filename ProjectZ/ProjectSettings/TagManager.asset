@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - Undefined
   - PlayerBasicAttack
+  - Wall
+  - Shadow
   layers:
   - Default
   - TransparentFX
@@ -50,4 +52,7 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Creature
+    uniqueID: 4290350535
     locked: 0

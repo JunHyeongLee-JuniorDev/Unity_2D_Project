@@ -24,6 +24,7 @@ public class EnemyControl : MonoBehaviour
     private NavMeshAgent agent;
     private Animator Ani;
     [SerializeField] private GameObject Player;
+    PlayerControl PlayerControl;
     private SpriteRenderer sprite;
     [SerializeField] private float Damage;
 
@@ -40,6 +41,7 @@ public class EnemyControl : MonoBehaviour
         }
     }
     [SerializeField] private float HP;
+    [SerializeField] public float MaxHP;
 
     public float _hp
     {
@@ -58,26 +60,9 @@ public class EnemyControl : MonoBehaviour
     {
             HP -= value;
     }
-
-    [SerializeField] private float Speed;
-
-    public float _Speed
-    {
-        get
-        {
-            return Speed;
-        }
-
-        set
-        {
-            Speed = value;
-        }
-    }
-
-    public bool isDead = false;
-    public readonly float[] MaxHealtharr = {20f, 10f, 30f, 25f};
-    public readonly float[] Damagearr = {3f, 2f, 5f, 4f };
-    public readonly float[] Speedarr = {2f, 3f, 1f, 1f };
+    public readonly float[] MaxHealtharr = {15f, 10f, 30f, 25f};
+    public readonly float[] Damagearr = {5f, 3f, 15f, 8f };
+    public readonly float[] Speedarr = {1.5f, 3f, 1f, 1f };
 
     private void Start()
     {
@@ -85,63 +70,76 @@ public class EnemyControl : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         Ani = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        PlayerControl = Player.GetComponentInParent<PlayerControl>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
-        if (gameObject.activeSelf)
+        if (!Dead && !isAttacking && !isStopByHit)
         {
-            if (isDead)
-                return;
-
-            if (!isdie())
-            {
-                agent.SetDestination(Player.transform.position);
-                EnemyMove();
-                StopByHit();
-            }
+            agent.SetDestination(Player.transform.position);
+            EnemyMoveAni();
+        }
+        else
+        {
+            agent.velocity = Vector3.zero;
         }
     }
 
-    private void StopByHit()
+    public bool isStopByHit = false;
+    public IEnumerator StopByHit_co()
     {
-        if (Ani.GetCurrentAnimatorStateInfo(0).IsTag("Hit"))
-        {
-            agent.isStopped = true;
-            agent.velocity = Vector3.zero;
-        }
+        if (Dead)
+            yield break;
 
-        if (!Ani.GetCurrentAnimatorStateInfo(0).IsTag("Hit"))
-        {
-            agent.isStopped = false;
-        }
+        isStopByHit = true;
+        agent.velocity = Vector3.zero;
+        Ani.SetTrigger("Hit");
+
+        yield return new WaitForSeconds(Ani.GetCurrentAnimatorClipInfo(0).Length);
+
+        isStopByHit = false;
     }
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.CompareTag("PlayerBasicAttack") && !isDead)
+        if (col.CompareTag("PlayerBasicAttack") && !isdie())
         {
-            Ani.SetTrigger("Hit");
+            if (!Dead)
+            {
+                _hp = HP - PlayerControl.BasicDamage;
+                StartCoroutine(StopByHit_co());
+            }
+            if (isdie())
+            {
+                GameManager.instance.AddScore();
+            }
         }
-
     }
 
-    private bool isdie()
+    public bool Dead = false;
+
+    public bool isdie()
     {
-        if(HP <= 0)
-        {
-            Ani.SetBool("Run", false);
-            Ani.SetTrigger("die");
-            isDead = true;
-            return true;
-        }
+            if (HP <= 0)
+            {
+            if (Dead)
+            {
+                return true;
+            }
+                Ani.SetBool("Run", false);
+                Ani.SetTrigger("die");
+                agent.enabled = false;
+                Dead = true;
+                return true;
+            }
 
-        return false;
+            return false;
     }
 
-    private void EnemyMove()
+    private void EnemyMoveAni()
     {
         if(agent.velocity.Equals(Vector3.zero) && !gameObject.name.Equals("Flying_eye(Clone)"))
         {
@@ -162,6 +160,17 @@ public class EnemyControl : MonoBehaviour
         {
             sprite.flipX = false;
         }
+    }
 
+    public bool isAttacking = false;
+
+    public IEnumerator TryAttack_co()
+    {
+        isAttacking = true;
+        Ani.SetTrigger("Attack");
+        yield return new WaitForSeconds(Ani.GetCurrentAnimatorStateInfo(0).length);
+        isAttacking = false;
+
+        agent.velocity = Vector3.zero;
     }
 }

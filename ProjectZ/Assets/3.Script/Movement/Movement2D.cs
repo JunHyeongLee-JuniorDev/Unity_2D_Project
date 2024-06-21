@@ -14,9 +14,11 @@ public class Movement2D : MonoBehaviour
     public float Move_Speed = 0f;
     [SerializeField] private Vector2 moveDirection = Vector3.zero;
 
-    void FixedUpdate()
+    void Update()
     {
+
         rb.MovePosition(rb.position + moveDirection * Move_Speed * Time.fixedDeltaTime);
+
     }
 
     public void MoveTo(Vector3 direction)

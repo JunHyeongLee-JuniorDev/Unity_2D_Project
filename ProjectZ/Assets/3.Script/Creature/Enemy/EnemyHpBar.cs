@@ -1,18 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyHpBar : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    EnemyControl enemy;
+    Slider slider;
+
+    public void SetBar(EnemyControl enemy)
     {
-        
+        this.enemy = enemy;
+        slider = GetComponent<Slider>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        slider.value = enemy._hp / enemy.MaxHP;
+    }
+
+    public void checkHp()
+    {
+        Debug.Log(slider.value);
+        slider.value = enemy._hp / enemy.MaxHP;
     }
 }
