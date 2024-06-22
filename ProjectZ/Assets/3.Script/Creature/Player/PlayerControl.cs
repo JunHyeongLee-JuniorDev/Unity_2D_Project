@@ -164,13 +164,14 @@ public class PlayerControl : MonoBehaviour
         if (col.CompareTag("EnemyHitBox"))
         {
             EnemyControl enemyControl = col.GetComponentInParent<EnemyControl>();
-            ob_Ani.SetTrigger("Hit");
 
             if ((CurHP - enemyControl._Damage < 0))
                 CurHP = 0;
 
             else
-            CurHP -= enemyControl._Damage;
+                CurHP -= enemyControl._Damage;
+
+            ob_Ani.SetTrigger("Hit");
 
             playerBar.CheckHPgage();
 

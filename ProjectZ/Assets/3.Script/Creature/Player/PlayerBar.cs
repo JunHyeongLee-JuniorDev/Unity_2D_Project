@@ -21,6 +21,10 @@ public class PlayerBar : MonoBehaviour
         HPslider.value = player.CurHP / player.MaxHP;
         APslider.value = player.CurAp / player.MaxAp;
         STslider.value = player.CurSt / player.MaxSt;
+
+        Debug.Log(player.CurHP);
+        Debug.Log(player.CurAp);
+        Debug.Log(player.CurSt);
     }    
 
     public void CheckHPgage()

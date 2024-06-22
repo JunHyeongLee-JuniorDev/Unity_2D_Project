@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     private EnemySpawner[] Spawner;
 
     public int PlayerKills = 0;
+    public int PLayerAllKills = 0;
+
     public GameObject Player => player;
     private bool isPlayerDead = false;
     public int Round
@@ -136,6 +138,7 @@ public class GameManager : MonoBehaviour
     public void AddScore()
     {
         PlayerKills += 1;
+        PLayerAllKills += 1;
         if (PlayerKills >= maxEnemyAmount[Round])
         {
             PlayerKills = 0;

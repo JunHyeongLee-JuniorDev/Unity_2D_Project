@@ -15,7 +15,7 @@ public class MouseControl : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        //Cursor.visible = false;
+        Cursor.visible = false;
     }
     
     void Update()
