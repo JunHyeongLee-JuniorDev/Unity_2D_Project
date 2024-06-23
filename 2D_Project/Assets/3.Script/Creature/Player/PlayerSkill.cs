@@ -157,7 +157,7 @@ public class PlayerSkill : MonoBehaviour
 
     private IEnumerator Getmousebutton()
     {
-        WaitForSeconds wfs = new WaitForSeconds(0.01f);
+        WaitForSeconds wfs = new WaitForSeconds(0.001f);
 
         while (!Input.GetMouseButtonDown(0))
         { 

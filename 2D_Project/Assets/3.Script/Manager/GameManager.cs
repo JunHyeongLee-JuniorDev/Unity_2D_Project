@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 
         playerControl = player.transform.GetComponent<PlayerControl>();
         playerBar = player.transform.GetComponent<PlayerBar>();
-
+        Resume();
             for (int i=1;i < maxEnemyAmount.Length; i++)
         {
             maxEnemyAmount[i] = 0;
@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartRound_co()
     {
-        WaitForSeconds SpawnTime = new WaitForSeconds(2f);
+        WaitForSeconds SpawnTime = new WaitForSeconds(1f);
         int MaxSpawnPool;
 
         MaxSpawnPool = Spawner[0].poolByRound[round];
@@ -159,6 +159,7 @@ public class GameManager : MonoBehaviour
     }
     [SerializeField]private Text countText;
     [SerializeField]private GameObject countOb;
+    private int maxRound = 3;
 
     private bool isRoundCleared = false;
     public IEnumerator RoundCleared_co()
@@ -167,6 +168,8 @@ public class GameManager : MonoBehaviour
         playerControl.CurHP = playerControl.MaxHP;
         playerBar.CheckHPgage();
         endTime = Time.time + 10f;
+        if (round+1 > maxRound)
+            Victory();
 
         Spawner[(int)EnemyName.GOBLIN].EndRound();
         Spawner[(int)EnemyName.FLYING_EYE].EndRound();
@@ -176,9 +179,9 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(10f);
         countOb.SetActive(false);
+        round += 1;
 
         isRoundCleared = false;
-        round += 1;
         StartRound();
     }
     float endTime;

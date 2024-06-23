@@ -7,6 +7,7 @@ public class ToMain : MonoBehaviour
 {
     public void ChangeScene()
     {
+        GameManager.instance.Resume();
         SceneManager.LoadScene(0);
     }
 }

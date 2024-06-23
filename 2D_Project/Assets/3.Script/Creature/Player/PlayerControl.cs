@@ -99,7 +99,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (!skill.isDashSlice && !GameManager.instance.isMenuOn)
         {
-            if(Input.GetMouseButtonDown(0))
+            if(Input.GetMouseButtonDown(0) && CurSt >= 10)
             TryAttack();
             PlayerMove();
         }
@@ -155,7 +155,8 @@ public class PlayerControl : MonoBehaviour
     }
 
     private void TryAttack() // 기본 공격 
-    {        
+    {
+        CurSt -= 10f;
         ob_Ani.SetTrigger("Attack");
     }
 
@@ -195,7 +196,7 @@ public class PlayerControl : MonoBehaviour
 
     private void TryDash() // 대쉬 기능
     {
-        if (CurSt >= 30)
+        if (CurSt >= 30f)
             if (Input.GetKeyUp(KeyCode.Space) && DashCount <= 0)
         {
             movement2D.Move_Speed = DashSpeed;

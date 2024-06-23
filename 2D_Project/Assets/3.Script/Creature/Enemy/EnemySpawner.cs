@@ -31,6 +31,7 @@ public class EnemySpawner : MonoBehaviour
     private void Awake()
     {
         enemyList = new List<GameObject>();
+        poolByRound = new int[4];
         switch(Enemy.name)
         {
             case "Goblin":
@@ -85,7 +86,6 @@ public class EnemySpawner : MonoBehaviour
         EnemyControl enemyControl;
         GameObject oneEnemy;
 
-
         if (i >= enemyList.Count)
         {
             oneEnemy = Instantiate(Enemy, poolPos, Quaternion.identity);
@@ -105,6 +105,9 @@ public class EnemySpawner : MonoBehaviour
         enemyControl._hp = enemyControl.MaxHealtharr[(int)enemyName];
         agent.enabled = true;
         enemyControl.Dead = false;
+        enemyControl.isAttacking = false;
+        enemyControl.isStopByHit = false;
+
         Spawn_Enemy_HPbar(enemyControl);
     }
 

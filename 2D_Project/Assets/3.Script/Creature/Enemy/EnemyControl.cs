@@ -173,10 +173,10 @@ public class EnemyControl : MonoBehaviour
     public IEnumerator TryAttack_co()
     {
         isAttacking = true;
+        agent.velocity = Vector3.zero;
         Ani.SetTrigger("Attack");
         yield return new WaitForSeconds(Ani.GetCurrentAnimatorStateInfo(0).length);
         isAttacking = false;
 
-        agent.velocity = Vector3.zero;
     }
 }
